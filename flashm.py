@@ -6,6 +6,7 @@
 # see README file for copyright information and version history
 
 import random
+from argparse import ArgumentParser
 import flashmquiz
 
 import cliui
@@ -212,7 +213,16 @@ def main():
         EVT_REV_LEARN: ('r', 'Learn with flipped cards'),
         EVT_SHOW: ('s', 'Show cards')
     }
-    UIMODULE.write(NOTICE)
+
+    argparser = ArgumentParser(description=NOTICE)
+    argparser.add_argument(
+        '-q', '--quiet', action='store_true',
+        help='turn off verbose output',
+    )
+    args = argparser.parse_args()
+    if not args.quiet:
+        UIMODULE.write(NOTICE)
+
     global cwq
     cwq = open_quiz_file()
 
