@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+
 # flashm.py the main module of FlashM 0.1.0
 # call this file with python (http://python.org)
 #
