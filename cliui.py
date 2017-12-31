@@ -13,16 +13,27 @@ DIALOG_TYPE_OK = 101
 DIALOG_TYPE_YES_NO = 102
 
 
+def prompt(description='', choices=[], default=None):
+    if choices or default:
+        if default:
+            defhint = 'default: ' + default
+            if choices:
+                defhint += '; '
+        else:
+            defhint = ''
+        hint = '(' + defhint + ', '.join(choices) + ')'
+        help_text = ' '.join([description, hint])
+    else:
+        help_text = description
+    return input(' '.join([help_text, '-> ']))
+
+
 def write(content):
     print(content)
 
 
 def read(hint='', default=None):
-    if default is not None:
-        defhint = 'default: %s; ' % default
-    else:
-        defhint = ''
-    reply = input(hint + ' (' + defhint + 'q! to cancel) -> ')
+    reply = prompt(hint, ['q! to cancel'], default=default)
     if default is not None and reply == '':
         return default
     elif reply.lower() != 'q!':
@@ -30,7 +41,7 @@ def read(hint='', default=None):
 
 
 def read_multiline(hint=''):
-    reply = input(hint + ' (q! to cancel, finish with ;;;) -> ')
+    reply = prompt(hint, ['q! to cancel', 'finish with ;;;'])
     if reply.lower() != 'q!':
         while reply[-3:] != ';;;':
             reply += '\n' + input('... ')
@@ -44,7 +55,7 @@ def dialog(type, hint=None):
     if type == DIALOG_TYPE_OK:
         input(output)
     elif type == DIALOG_TYPE_YES_NO:
-        return 'y' == input(output + '(y/n) -> ').lower()
+        return 'y' == prompt(output, ['(y/n)']).lower()
 
 
 def choice(options, hint=None, show_options=True):
@@ -69,7 +80,7 @@ def choice(options, hint=None, show_options=True):
             while helpcommand in shortcutreturn:
                 helpcommand += 'h'
             output += '(%s for help) ' % helpcommand
-        reply = input(output + '-> ').lower()
+        reply = prompt(output).lower()
         if reply == 'h':
             for key in options:
                 print('   ' + '   '.join(options[key]))

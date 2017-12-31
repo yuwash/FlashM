@@ -31,12 +31,6 @@ NOTICE = """FlashM version 0.1.0
   LICENSE file for details and the README file for more information
   about usage, installation and the history of this application."""
 
-# for Python 2
-try:
-    input = raw_input
-except NameError:
-    pass
-
 UIMODULE = cliui
 STD_IOMODULE = cpq  # what to use when file name extension doesn't imply
 #  any specific quiz format (like .pau.gz for Pauker lessons)
@@ -68,15 +62,15 @@ def learn(quiz, flags=()):
         card = remaining[x]
         if 'FLIP_QA' in flags:
             card.reverse()
-        a = input(card[0] + '? Answer (optional; q! to end) -> ')
+        a = UIMODULE.prompt(card[0] + '? Answer', ['optional; q! to end'])
         print('The default answer: ' + card[1])
         if a == 'q!':
             remaining = []
         elif 'CHKCORRECT' in flags and(a == card[1]):
             print("Congratulations, that's right!")
             del remaining[x]
-        elif 'ASKRIGHT' not in flags or input(
-            'Was it right? (y/n) -> '
+        elif 'ASKRIGHT' not in flags or UIMODULE.prompt(
+            'Was it right?', ['y/n']
         ).upper() == 'Y':
             del remaining[x]
 
@@ -95,7 +89,7 @@ def delete_menu(quiz):
     if quiz.set:  # isn't empty
         # list cards with indices
         show_cards(True)
-        cardindices = input('Delete which card(s)? -> ').split(',')
+        cardindices = UIMODULE.prompt('Delete which card(s)?').split(',')
         deleted = []  # adapt to the modified indices
         # and avoid deleting the same index several times
         for istr in cardindices:
