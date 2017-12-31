@@ -63,11 +63,11 @@ def learn(quiz, flags=()):
         if 'FLIP_QA' in flags:
             card.reverse()
         a = UIMODULE.prompt(card[0] + '? Answer', ['optional; q! to end'])
-        print('The default answer: ' + card[1])
+        UIMODULE.write('The default answer: ' + card[1])
         if a == 'q!':
             remaining = []
         elif 'CHKCORRECT' in flags and(a == card[1]):
-            print("Congratulations, that's right!")
+            UIMODULE.write("Congratulations, that's right!")
             del remaining[x]
         elif 'ASKRIGHT' not in flags or UIMODULE.prompt(
             'Was it right?', ['y/n']
@@ -103,7 +103,7 @@ def delete_menu(quiz):
                     quiz.remove(i)
                     deleted.append(i)
             except IndexError:
-                print('IndexError: list index %s out of range' % istr)
+                UIMODULE.write('IndexError: list index %s out of range' % istr)
             except ValueError:  # if istr doesn't contain a number
                 pass
     else:
