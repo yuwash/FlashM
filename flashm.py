@@ -41,10 +41,8 @@ UIMODULE = cliui
 STD_IOMODULE = cpq  # what to use when file name extension doesn't imply
 #  any specific quiz format (like .pau.gz for Pauker lessons)
 
-global cwq  # working quiz (currently the only quiz)
 
-
-def learn(flags=()):
+def learn(quiz, flags=()):
     # @param flags: These are understood:
     # 'FLIP_QA': show answer and think about the question
     # 'LIST_ORDER': ask for questions in the listed order (default:
@@ -56,7 +54,7 @@ def learn(flags=()):
     #   irrelevant differences and unpredicted alternative answers)
     #   (ignored if CHKCORRECT is not present)
 
-    remaining = cwq.set
+    remaining = quiz.set
     if 'LIST_ORDER' or 'REV_ORDER' in flags:
         x = -1  # preset to get 0 as the first index; same for REV_ORDER,
         #  because in this case, list is reversed (below)
@@ -83,9 +81,9 @@ def learn(flags=()):
             del remaining[x]
 
 
-def show_cards(show_indices=False):
+def show_cards(quiz, show_indices=False):
     i = 0
-    for card in cwq.set:
+    for card in quiz.set:
         output = ''
         if show_indices:
             output += '[%d] ' % i
@@ -93,8 +91,8 @@ def show_cards(show_indices=False):
         UIMODULE.write(output + '[' + card[0] + ': ' + card[1] + ']')
 
 
-def delete_menu():
-    if cwq.set:  # isn't empty
+def delete_menu(quiz):
+    if quiz.set:  # isn't empty
         # list cards with indices
         show_cards(True)
         cardindices = input('Delete which card(s)? -> ').split(',')
@@ -108,7 +106,7 @@ def delete_menu():
                         if di < i:
                             i -= 1  # index has been changed after deletion
                             # of cards indexed below i
-                    cwq.remove(i)
+                    quiz.remove(i)
                     deleted.append(i)
             except IndexError:
                 print('IndexError: list index %s out of range' % istr)
@@ -127,20 +125,20 @@ def guess_file_type(filename):
         return STD_IOMODULE
 
 
-def save(save_as=True, ask_whether_to_save=False):
-    cwq.temp_save(STD_IOMODULE)
+def save(quiz, save_as=True, ask_whether_to_save=False):
+    quiz.temp_save(STD_IOMODULE)
     if not ask_whether_to_save or UIMODULE.dialog(
         UIMODULE.DIALOG_TYPE_YES_NO, 'Do you want to save changes?'
     ):
         if save_as:
-            new_file_name = UIMODULE.read('Save as', cwq.file_name)
+            new_file_name = UIMODULE.read('Save as', quiz.file_name)
             if new_file_name:  # not canceled
-                cwq.temp_save(guess_file_type(new_file_name))
+                quiz.temp_save(guess_file_type(new_file_name))
                 # caution, temp_save only changes file type but preserves
                 # the old .tmp file name until update is called below
-                cwq.update(new_file_name)
+                quiz.update(new_file_name)
         else:
-            cwq.update()
+            quiz.update()
 
 
 def getcard():
@@ -159,44 +157,19 @@ def str_get_card(card_str):
         return card
 
 
-def text_import_menu():
+def text_import_menu(quiz):
     newitems = []
     userinput = UIMODULE.read_multiline('Type in your text')
     for line in userinput.split('\n'):
         newitems.append(str_get_card(line))
         if newitems[-1]:  # isn't None
-            cwq.append(newitems[-1])
+            quiz.append(newitems[-1])
         else:
             del newitems[-1]
     return newitems
 
 
-def open_quiz_file(create=True):
-    # @param create: whether to create if file doesn't exist yet
-
-    result = False
-    while not result:
-        name = UIMODULE.read('What is the quiz called?')
-        if name == '':
-            UIMODULE.write('Error: Please enter a quiz name.')
-        elif name:  # is not None
-            try:
-                result = guess_file_type(name).load(name, name)
-                # filename=name
-            except IOError:
-                if(create and UIMODULE.dialog(
-                    UIMODULE.DIALOG_TYPE_YES_NO,
-                    'The quiz file "' + name + '" doesn\'t exist. '
-                    + 'Do you want to create it?'
-                )):
-                    open(name, 'w').close()  # create an empty file
-                    result = flashmquiz.quiz(name)
-        else:  # user wants to quit
-            break
-    return result
-
-
-def main():
+class Session:
     EVT_DELETE = 101
     EVT_TEXT_IMPORT = 102
     EVT_LEARN = 103
@@ -214,41 +187,75 @@ def main():
         EVT_SHOW: ('s', 'Show cards')
     }
 
+    def __init__(self, cwq, uimodule=UIMODULE, quiet=False):
+        self.cwq = cwq  # working quiz (currently the only quiz)
+        self.uimodule = uimodule
+        self.quiet = quiet
+
+    @classmethod
+    def open_quiz_file(create=True, uimodule=UIMODULE, quiet=False):
+        # @param create: whether to create if file doesn't exist yet
+
+        result = False
+        while result is False:
+            name = uimodule.read('What is the quiz called?')
+            if name == '':
+                uimodule.write('Error: Please enter a quiz name.')
+            elif name:  # is not None
+                try:
+                    result = guess_file_type(name).load(name, name)
+                    # filename=name
+                except IOError:
+                    if(create and uimodule.dialog(
+                        uimodule.DIALOG_TYPE_YES_NO,
+                        'The quiz file "' + name + '" doesn\'t exist. '
+                        + 'Do you want to create it?'
+                    )):
+                        open(name, 'w').close()  # create an empty file
+                        result = flashmquiz.quiz(name)
+            else:  # user wants to quit
+                break
+        return Session(result, uimodule, quiet)
+
+    def start(self):
+        if not self.quiet:
+            self.uimodule.write(NOTICE)
+        stay = self.cwq is not False
+        # open_quiz_file returns False if user wants
+        # to quit without opening or creating any quiz ('q!')
+        cls = self
+        while stay:
+            command = self.uimodule.choice(
+                cls.options, 'What do you want?', False)
+            if command == cls.EVT_DELETE:
+                delete_menu(self.cwq)
+            elif command == cls.EVT_TEXT_IMPORT:
+                text_import_menu(self.cwq)
+                save(self.cwq, True, True)
+            elif command == cls.EVT_LEARN:
+                learn(self.cwq, ('CHKCORRECT', 'ASKRIGHT'))
+            elif command == cls.EVT_NEW_CARD:
+                newcard = getcard()
+                self.cwq.append(newcard)
+                save(self.cwq, True, True)
+            elif command == cls.EVT_QUIT:  # quit application
+                stay = False
+                if self.cwq.modified:  # if not saved after modification
+                    save(self.cwq, True, True)
+            elif command == cls.EVT_REV_LEARN:
+                learn(self.cwq, ('FLIP_QA', 'CHKCORRECT', 'ASKRIGHT'))
+            elif command == cls.EVT_SHOW:
+                show_cards(self.cwq)
+
+
+def main():
     argparser = ArgumentParser(description=NOTICE)
     argparser.add_argument(
         '-q', '--quiet', action='store_true',
         help='turn off verbose output',
     )
     args = argparser.parse_args()
-    if not args.quiet:
-        UIMODULE.write(NOTICE)
-
-    global cwq
-    cwq = open_quiz_file()
-
-    stay = cwq is not False  # open_quiz_file returns False if user wants
-    # to quit without opening or creating any quiz ('q!')
-    while stay:
-        command = UIMODULE.choice(options, 'What do you want?', False)
-        if command == EVT_DELETE:
-            delete_menu()
-        elif command == EVT_TEXT_IMPORT:
-            text_import_menu()
-            save(True, True)
-        elif command == EVT_LEARN:
-            learn(('CHKCORRECT', 'ASKRIGHT'))
-        elif command == EVT_NEW_CARD:
-            newcard = getcard()
-            cwq.append(newcard)
-            save(True, True)
-        elif command == EVT_QUIT:  # quit application
-            stay = False
-            if cwq.modified:  # if not saved after modification
-                save(True, True)
-        elif command == EVT_REV_LEARN:
-            learn(('FLIP_QA', 'CHKCORRECT', 'ASKRIGHT'))
-        elif command == EVT_SHOW:
-            show_cards()
+    Session.open_quiz_file(quiet=args.quiet).start()
 
 
 if __name__ == "__main__":
