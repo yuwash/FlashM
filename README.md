@@ -1,11 +1,12 @@
-FlashM 0.1.0 by Yushin Washio (sourceforge username yuwashio)
-written 2011-09-26
+# FlashM
 
 A still simple cli flash card application 
-compatible with lesson files of Pauker (http://pauker.sourceforge.net)
-Copyright (C) 2011 Yushin Washio (yuwas at ht.cx)
-inspired by:
-  FlashE Copyright (C) 2003 Robie Lutsey (http://sourceforge.net/project/flashe)
+compatible with lesson files of [Pauker](http://pauker.sourceforge.net)
+
+The project started 2011 with inspiration from
+[FlashE](http://sourceforge.net/project/flashe) (2003) by Robie Lutsey
+
+## License
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,29 +23,34 @@ along with this program (see LICENSE file);
 If not, write to the Free Software Foundation, Inc., 
 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-You can contact the author at yuwas at ht.cx (substitute at by @)
+## Changes
 
-
-CHANGES:
 0.1.0 - The first version!
 
-REQUIREMENTS:
+## Requirements
+
 * Python available at http://python.org (included in most Linux 
   distributions)
 * Any commandline emulator (terminal) of your choice (included in
   almost all operating systems)
 
-INSTALLATION:
+## Installation
+
 unzip (if compressed) and save into any folder you like!
 make sure that you want to save lesson files in that directory
 (optionally, you can create shortcuts of flashm.py 
 on the desktop etc. for increased accessability)
 
-UTILISATION:
+## Usage
+
 * Linux users can open a terminal in the installed directory and call
+   ```
     python flashm.py
-  OR click on a shortcut for the command 
+   ```
+  OR click on a shortcut for the command
+   ```
     python <PATH>/flashm.py
+   ```
   where <PATH> should be substituted by your installation directory of 
   FlashM with the setting "execute in a command-line emulator" checked
 * Other users could need to execute Python directly from its 
@@ -58,7 +64,6 @@ UTILISATION:
 
 
 This is a beta release.
-I'm happy to hear any feedback at yuwas at ht.cx (substitute
-at by @)
+I'm happy to hear any feedback. Make a pull request or submit an issue!
 
 Have fun and I hope this helps you learning whatever you want!
