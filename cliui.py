@@ -49,13 +49,10 @@ def read_multiline(hint=''):
 
 
 def dialog(type, hint=None):
-    output = ''
-    if hint:  # is not None
-        output += hint + ' '
     if type == DIALOG_TYPE_OK:
-        input(output)
+        input(hint)
     elif type == DIALOG_TYPE_YES_NO:
-        return 'y' == prompt(output, ['(y/n)']).lower()
+        return 'y' == prompt(hint, ['(y/n)']).lower()
 
 
 def choice(options, hint=None, show_options=True):
