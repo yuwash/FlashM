@@ -4,14 +4,19 @@
 # This only works within flashm.py
 # see README file for copyright information and version history
 
-import cPickle
+try:
+    # for Python 2
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 import flashmquiz
 
 
 def load(filename, name):
-    f = open(filename)
+    f = open(filename, 'rb')
     try:
-        set = cPickle.load(f)
+        set = pickle.load(f)
         return flashmquiz.quiz(name, set)
     except EOFError:  # file is empty
         return flashmquiz.quiz(name)
@@ -20,6 +25,6 @@ def load(filename, name):
 
 def dump(quiz, filename):
     # @param quiz has the type of flashmquiz.quiz
-    f = open(filename, 'w')
-    cPickle.dump(quiz.set, f)  # write the quiz to a file
+    f = open(filename, 'wb')
+    pickle.dump(quiz.set, f)  # write the quiz to a file
     f.close()
