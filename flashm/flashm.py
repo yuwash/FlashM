@@ -218,7 +218,7 @@ class Session:
                         + 'Do you want to create it?'
                     )):
                         open(name, 'w').close()  # create an empty file
-                        result = flashmquiz.quiz(name)
+                        result = flashmquiz.Quiz(name)
             else:  # user wants to quit
                 break
         return Session(result, uimodule, quiet)

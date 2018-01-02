@@ -6,7 +6,7 @@
 import os
 
 
-class quiz:
+class Quiz:
     def __init__(self, name, set=[], file_name=None):
         self.name = name
         self.set = set
