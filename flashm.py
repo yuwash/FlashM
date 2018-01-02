@@ -186,7 +186,7 @@ class Session:
         self.uimodule = uimodule
         self.quiet = quiet
 
-    @classmethod
+    @staticmethod
     def open_quiz_file(create=True, uimodule=UIMODULE, quiet=False):
         # @param create: whether to create if file doesn't exist yet
 
