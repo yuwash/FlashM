@@ -1,12 +1,9 @@
-#! /usr/bin/env python
-
 # flashm.py the main module of FlashM 0.1.0
 # call this file with python (http://python.org)
 #
 # see README file for copyright information and version history
 
 import random
-from argparse import ArgumentParser
 import flashmquiz
 
 import cpq
@@ -255,28 +252,3 @@ class Session:
                 )
             elif command == cls.EVT_SHOW:
                 self.uimodule.show_cards(self.cwq)
-
-
-def main():
-    argparser = ArgumentParser(description=NOTICE)
-    argparser.add_argument(
-        '-q', '--quiet', action='store_true',
-        help='turn off verbose output',
-    )
-    argparser.add_argument(
-        '-i', '--interaction', choices=['cli', 'fullterm'], nargs='?',
-        const='cli', default='cli',
-        help='UI for interaction',
-    )
-    args = argparser.parse_args()
-    if args.interaction == 'cli':
-        from cliui import CliUi
-        ui = CliUi()
-    elif args.interaction == 'fullterm':
-        from fulltermui import FullTerminalUi
-        ui = FullTerminalUi()
-    Session.open_quiz_file(uimodule=ui, quiet=args.quiet).start()
-
-
-if __name__ == "__main__":
-    main()
