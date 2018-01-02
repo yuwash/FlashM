@@ -9,7 +9,6 @@ import random
 from argparse import ArgumentParser
 import flashmquiz
 
-import cliui
 import cpq
 import pau
 import mne
@@ -31,83 +30,8 @@ NOTICE = """FlashM version 0.1.0
   LICENSE file for details and the README file for more information
   about usage, installation and the history of this application."""
 
-UIMODULE = cliui
 STD_IOMODULE = cpq  # what to use when file name extension doesn't imply
 #  any specific quiz format (like .pau.gz for Pauker lessons)
-
-
-def learn(quiz, flags=()):
-    # @param flags: These are understood:
-    # 'FLIP_QA': show answer and think about the question
-    # 'LIST_ORDER': ask for questions in the listed order (default:
-    #   random order)
-    # 'REV_ORDER': ask for questions in the reversed listed order
-    # 'CHKCORRECT': the program automatically recognizes your correct
-    #   answer
-    # 'ASKRIGHT': ask whether your answer was correct (to tolerate
-    #   irrelevant differences and unpredicted alternative answers)
-    #   (ignored if CHKCORRECT is not present)
-
-    remaining = quiz.set
-    if 'LIST_ORDER' or 'REV_ORDER' in flags:
-        x = -1  # preset to get 0 as the first index; same for REV_ORDER,
-        #  because in this case, list is reversed (below)
-        if 'REV_ORDER' in flags:
-            remaining.reverse()
-    while remaining:  # isn't empty
-        if 'LIST_ORDER' in flags:
-            x += 1
-        else:
-            x = random.randint(0, len(remaining)-1)
-        card = remaining[x]
-        if 'FLIP_QA' in flags:
-            card.reverse()
-        a = UIMODULE.prompt(card[0] + '? Answer', ['optional; q! to end'])
-        UIMODULE.write('The default answer: ' + card[1])
-        if a == 'q!':
-            remaining = []
-        elif 'CHKCORRECT' in flags and(a == card[1]):
-            UIMODULE.write("Congratulations, that's right!")
-            del remaining[x]
-        elif 'ASKRIGHT' not in flags or UIMODULE.prompt(
-            'Was it right?', ['y/n']
-        ).upper() == 'Y':
-            del remaining[x]
-
-
-def show_cards(quiz, show_indices=False):
-    i = 0
-    for card in quiz.set:
-        output = ''
-        if show_indices:
-            output += '[%d] ' % i
-            i += 1
-        UIMODULE.write(output + '[' + card[0] + ': ' + card[1] + ']')
-
-
-def delete_menu(quiz):
-    if quiz.set:  # isn't empty
-        # list cards with indices
-        show_cards(True)
-        cardindices = UIMODULE.prompt('Delete which card(s)?').split(',')
-        deleted = []  # adapt to the modified indices
-        # and avoid deleting the same index several times
-        for istr in cardindices:
-            try:
-                i = int(istr)
-                if i not in deleted:
-                    for di in deleted:
-                        if di < i:
-                            i -= 1  # index has been changed after deletion
-                            # of cards indexed below i
-                    quiz.remove(i)
-                    deleted.append(i)
-            except IndexError:
-                UIMODULE.write('IndexError: list index %s out of range' % istr)
-            except ValueError:  # if istr doesn't contain a number
-                pass
-    else:
-        UIMODULE.write('Set is empty!')
 
 
 def guess_file_type(filename):
@@ -119,29 +43,6 @@ def guess_file_type(filename):
         return STD_IOMODULE
 
 
-def save(quiz, save_as=True, ask_whether_to_save=False):
-    quiz.temp_save(STD_IOMODULE)
-    if not ask_whether_to_save or UIMODULE.dialog(
-        UIMODULE.DIALOG_TYPE_YES_NO, 'Do you want to save changes?'
-    ):
-        if save_as:
-            new_file_name = UIMODULE.read('Save as', quiz.file_name)
-            if new_file_name:  # not canceled
-                quiz.temp_save(guess_file_type(new_file_name))
-                # caution, temp_save only changes file type but preserves
-                # the old .tmp file name until update is called below
-                quiz.update(new_file_name)
-        else:
-            quiz.update()
-
-
-def getcard():
-    question = UIMODULE.read('What is the question?')
-    answer = UIMODULE.read('What is the answer?')
-    if question and answer:  # aren't interrupted
-        return [question, answer]
-
-
 def str_get_card(card_str):
     card_str.replace('\=', '&&eq;')
     card = card_str.split('=', 2)
@@ -151,16 +52,127 @@ def str_get_card(card_str):
         return card
 
 
-def text_import_menu(quiz):
-    newitems = []
-    userinput = UIMODULE.read_multiline('Type in your text')
-    for line in userinput.split('\n'):
-        newitems.append(str_get_card(line))
-        if newitems[-1]:  # isn't None
-            quiz.append(newitems[-1])
+class Ui:
+    DIALOG_TYPE_OK = 101
+    DIALOG_TYPE_YES_NO = 102
+
+    def prompt(description='', choices=[], default=None):
+        raise NotImplementedError('please implement in a subclass!')
+
+    def read(hint='', default=None):
+        raise NotImplementedError('please implement in a subclass!')
+
+    def read_multiline(hint=''):
+        raise NotImplementedError('please implement in a subclass!')
+
+    def write(content):
+        raise NotImplementedError('please implement in a subclass!')
+
+    def dialog(type, hint=None):
+        raise NotImplementedError('please implement in a subclass!')
+
+    def learn(self, quiz, flags=()):
+        # @param flags: These are understood:
+        # 'FLIP_QA': show answer and think about the question
+        # 'LIST_ORDER': ask for questions in the listed order (default:
+        #   random order)
+        # 'REV_ORDER': ask for questions in the reversed listed order
+        # 'CHKCORRECT': the program automatically recognizes your correct
+        #   answer
+        # 'ASKRIGHT': ask whether your answer was correct (to tolerate
+        #   irrelevant differences and unpredicted alternative answers)
+        #   (ignored if CHKCORRECT is not present)
+
+        remaining = quiz.set
+        if 'LIST_ORDER' or 'REV_ORDER' in flags:
+            x = -1  # preset to get 0 as the first index; same for REV_ORDER,
+            #  because in this case, list is reversed (below)
+            if 'REV_ORDER' in flags:
+                remaining.reverse()
+        while remaining:  # isn't empty
+            if 'LIST_ORDER' in flags:
+                x += 1
+            else:
+                x = random.randint(0, len(remaining)-1)
+            card = remaining[x]
+            if 'FLIP_QA' in flags:
+                card.reverse()
+            a = self.prompt(card[0] + '? Answer', ['optional; q! to end'])
+            self.write('The default answer: ' + card[1])
+            if a == 'q!':
+                remaining = []
+            elif 'CHKCORRECT' in flags and(a == card[1]):
+                self.write("Congratulations, that's right!")
+                del remaining[x]
+            elif 'ASKRIGHT' not in flags or self.prompt(
+                'Was it right?', ['y/n']
+            ).upper() == 'Y':
+                del remaining[x]
+
+    def show_cards(self, quiz, show_indices=False):
+        i = 0
+        for card in quiz.set:
+            output = ''
+            if show_indices:
+                output += '[%d] ' % i
+                i += 1
+            self.write(output + '[' + card[0] + ': ' + card[1] + ']')
+
+    def delete_menu(self, quiz):
+        if quiz.set:  # isn't empty
+            # list cards with indices
+            self.show_cards(True)
+            cardindices = self.prompt('Delete which card(s)?').split(',')
+            deleted = []  # adapt to the modified indices
+            # and avoid deleting the same index several times
+            for istr in cardindices:
+                try:
+                    i = int(istr)
+                    if i not in deleted:
+                        for di in deleted:
+                            if di < i:
+                                i -= 1  # index has been changed after deletion
+                                # of cards indexed below i
+                        quiz.remove(i)
+                        deleted.append(i)
+                except IndexError:
+                    self.write('IndexError: list index %s out of range' % istr)
+                except ValueError:  # if istr doesn't contain a number
+                    pass
         else:
-            del newitems[-1]
-    return newitems
+            self.write('Set is empty!')
+
+    def save(self, quiz, save_as=True, ask_whether_to_save=False):
+        quiz.temp_save(STD_IOMODULE)
+        if not ask_whether_to_save or self.dialog(
+            self.DIALOG_TYPE_YES_NO, 'Do you want to save changes?'
+        ):
+            if save_as:
+                new_file_name = self.read('Save as', quiz.file_name)
+                if new_file_name:  # not canceled
+                    quiz.temp_save(guess_file_type(new_file_name))
+                    # caution, temp_save only changes file type but preserves
+                    # the old .tmp file name until update is called below
+                    quiz.update(new_file_name)
+            else:
+                quiz.update()
+
+    def getcard(self):
+        question = self.read('What is the question?')
+        answer = self.read('What is the answer?')
+        if question and answer:  # aren't interrupted
+            return [question, answer]
+
+    def text_import_menu(self, quiz):
+        newitems = []
+        userinput = self.read_multiline('Type in your text')
+        for line in userinput.split('\n'):
+            newitems.append(str_get_card(line))
+            if newitems[-1]:  # isn't None
+                quiz.append(newitems[-1])
+            else:
+                del newitems[-1]
+        return newitems
 
 
 class Session:
@@ -181,13 +193,13 @@ class Session:
         EVT_SHOW: ('s', 'Show cards')
     }
 
-    def __init__(self, cwq, uimodule=UIMODULE, quiet=False):
+    def __init__(self, cwq, uimodule, quiet=False):
         self.cwq = cwq  # working quiz (currently the only quiz)
         self.uimodule = uimodule
         self.quiet = quiet
 
     @staticmethod
-    def open_quiz_file(create=True, uimodule=UIMODULE, quiet=False):
+    def open_quiz_file(uimodule, create=True, quiet=False):
         # @param create: whether to create if file doesn't exist yet
 
         result = False
@@ -222,24 +234,27 @@ class Session:
             command = self.uimodule.choice(
                 cls.options, 'What do you want?', False)
             if command == cls.EVT_DELETE:
-                delete_menu(self.cwq)
+                self.uimodule.delete_menu(self.cwq)
             elif command == cls.EVT_TEXT_IMPORT:
-                text_import_menu(self.cwq)
-                save(self.cwq, True, True)
+                self.uimodule.text_import_menu(self.cwq)
+                self.uimodule.save(self.cwq, True, True)
             elif command == cls.EVT_LEARN:
-                learn(self.cwq, ('CHKCORRECT', 'ASKRIGHT'))
+                self.uimodule.learn(self.cwq, ('CHKCORRECT', 'ASKRIGHT'))
             elif command == cls.EVT_NEW_CARD:
-                newcard = getcard()
+                newcard = self.uimodule.getcard()
                 self.cwq.append(newcard)
-                save(self.cwq, True, True)
+                self.uimodule.save(self.cwq, True, True)
             elif command == cls.EVT_QUIT:  # quit application
                 stay = False
                 if self.cwq.modified:  # if not saved after modification
-                    save(self.cwq, True, True)
+                    self.uimodule.save(self.cwq, True, True)
             elif command == cls.EVT_REV_LEARN:
-                learn(self.cwq, ('FLIP_QA', 'CHKCORRECT', 'ASKRIGHT'))
+                self.uimodule.learn(
+                    self.cwq,
+                    ('FLIP_QA', 'CHKCORRECT', 'ASKRIGHT'),
+                )
             elif command == cls.EVT_SHOW:
-                show_cards(self.cwq)
+                self.uimodule.show_cards(self.cwq)
 
 
 def main():
@@ -249,7 +264,9 @@ def main():
         help='turn off verbose output',
     )
     args = argparser.parse_args()
-    Session.open_quiz_file(quiet=args.quiet).start()
+    from cliui import CliUi
+    # from fulltermui import FullTerminalUi
+    Session.open_quiz_file(uimodule=CliUi(), quiet=args.quiet).start()
 
 
 if __name__ == "__main__":
