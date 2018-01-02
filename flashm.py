@@ -19,7 +19,7 @@ import mne
 # mne.py for zipped quiz files of Mnemosyne (mnemosyne.org)
 
 NOTICE = """FlashM version 0.1.0
-  Copyright (C) 2011 Yushin Washio (yuwas at ht.cx)
+  Copyright (C) 2011-2017 Yushin Washio (yuwash at yandex dot com)
   inspired by:
     FlashE A Very simple flash card program
     Copyright (C) 2003  Robie Lutsey (robie at 1937.net)
