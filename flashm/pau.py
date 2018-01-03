@@ -9,15 +9,21 @@ import gzip
 import os
 import xml.dom.minidom
 
+try:
+    unicode2 = unicode
+
+    def str(bytes_or_buffer):
+        return unicode2(bytes_or_buffer.encode('utf_8'), 'utf_8')
+except NameError:
+    pass
+
 
 def load(filename, name):
     pf = gzip.open(filename)
 
     def sidetext(node):
-        return unicode(
+        return str(
             node.getElementsByTagName('Text').item(0).firstChild.data.strip()
-            .encode('utf_8'),
-            'utf_8'
         )
     cards = xml.dom.minidom.parse(pf).getElementsByTagName('Card')
     pf.close()

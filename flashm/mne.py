@@ -9,12 +9,20 @@ import zipfile
 import os
 import xml.dom.minidom
 
+try:
+    unicode2 = unicode
+
+    def str(bytes_or_buffer):
+        return unicode2(bytes_or_buffer.encode('utf_8'), 'utf_8')
+except NameError:
+    pass
+
 
 def load(filename, name):
     zf = zipfile.ZipFile(filename)
     xmlfilename = zf.namelist()[0]
     sidetext = lambda node: (
-        unicode(node.firstChild.data.strip().encode('utf_8'), 'utf_8')
+        str(node.firstChild.data.strip())
     )
     cards = (
         xml.dom.minidom.parse(zf.open(xmlfilename))
