@@ -163,20 +163,24 @@ class Ui:
             self.DIALOG_TYPE_YES_NO, 'Do you want to save changes?'
         ):
             if save_as:
-                new_file_name = self.read('Save as', quiz.file_name)
-                if new_file_name:  # not canceled
+                try:
+                    new_file_name = self.read('Save as', quiz.file_name)
                     quiz.temp_save(guess_file_type(new_file_name))
                     # caution, temp_save only changes file type but preserves
                     # the old .tmp file name until update is called below
                     quiz.update(new_file_name)
+                except ReadCancelError:
+                    pass
             else:
                 quiz.update()
 
     def getcard(self):
-        question = self.read('What is the question?')
-        answer = self.read('What is the answer?')
-        if question and answer:  # aren't interrupted
+        try:
+            question = self.read('What is the question?')
+            answer = self.read('What is the answer?')
             return [question, answer]
+        except ReadCancelError:
+            return
 
     def text_import_menu(self, quiz):
         newitems = []
@@ -219,10 +223,11 @@ class Session:
 
         result = False
         while result is False:
-            name = uimodule.read('What is the quiz called?')
-            if name == '':
-                uimodule.write('Error: Please enter a quiz name.')
-            elif name:  # is not None
+            try:
+                name = uimodule.read('What is the quiz called?')
+                if name == '':
+                    uimodule.write('Error: Please enter a quiz name.')
+                    continue
                 try:
                     result = guess_file_type(name).load(name, name)
                     # filename=name
@@ -234,16 +239,14 @@ class Session:
                     )):
                         open(name, 'w').close()  # create an empty file
                         result = flashmquiz.Quiz(name)
-            else:  # user wants to quit
-                break
+            except ReadCancelError:  # user wants to quit during read
+                return result
         return Session(result, uimodule, quiet)
 
     def start(self):
         if not self.quiet:
             self.uimodule.write(NOTICE)
         stay = self.cwq is not False
-        # open_quiz_file returns False if user wants
-        # to quit without opening or creating any quiz ('q!')
         cls = self
         while stay:
             command = self.uimodule.choice(
@@ -257,8 +260,9 @@ class Session:
                 self.uimodule.learn(self.cwq, ('CHKCORRECT', 'ASKRIGHT'))
             elif command == cls.EVT_NEW_CARD:
                 newcard = self.uimodule.getcard()
-                self.cwq.append(newcard)
-                self.uimodule.save(self.cwq, True, True)
+                if newcard is not None:
+                    self.cwq.append(newcard)
+                    self.uimodule.save(self.cwq, True, True)
             elif command == cls.EVT_QUIT:  # quit application
                 stay = False
                 if self.cwq.modified:  # if not saved after modification

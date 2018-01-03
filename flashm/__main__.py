@@ -22,7 +22,11 @@ def main():
     elif args.interaction == 'fullterm':
         from .fulltermui import FullTerminalUi
         ui = FullTerminalUi()
-    Session.open_quiz_file(uimodule=ui, quiet=args.quiet).start()
+    # open_quiz_file returns False if user wants
+    # to quit without opening or creating any quiz ('q!')
+    session = Session.open_quiz_file(uimodule=ui, quiet=args.quiet)
+    if session:
+        session.start()
 
 
 if __name__ == "__main__":
