@@ -17,9 +17,9 @@ def load(filename, name):
     f = open(filename, 'rb')
     try:
         set = pickle.load(f)
-        return flashmquiz.quiz(name, set)
+        return flashmquiz.Quiz(name, set)
     except EOFError:  # file is empty
-        return flashmquiz.quiz(name)
+        return flashmquiz.Quiz(name)
     f.close()
 
 
