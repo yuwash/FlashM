@@ -30,13 +30,6 @@ class CliUi(Ui):
     def write(self, content):
         print(content)
 
-    def read(self, hint='', default=None):
-        reply = self.prompt(hint, ['q! to cancel'], default=default)
-        if default is not None and reply == '':
-            return default
-        elif reply.lower() != 'q!':
-            return reply
-
     def read_multiline(self, hint=''):
         reply = self.prompt(hint, ['q! to cancel', 'finish with ;;;'])
         if reply.lower() != 'q!':

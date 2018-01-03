@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from tempfile import NamedTemporaryFile
 import subprocess
 from prompt_toolkit.shortcuts import dialogs
-from .ui import Ui
+from .ui import Ui, ReadCancelError
 
 EDITOR = 'vim'
 
@@ -42,10 +42,12 @@ class FullTerminalUi(Ui):
             else:
                 text = defaulthint
         reply = dialogs.input_dialog(text=text)
-        if reply is None:
-            return default
-        else:
+        if reply:
             return reply
+        elif reply is None:
+            raise ReadCancelError
+        else:
+            return default
 
     def read_multiline(self, hint=''):
         self.write(hint)

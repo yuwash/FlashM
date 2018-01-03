@@ -49,6 +49,10 @@ def str_get_card(card_str):
         return card
 
 
+class ReadCancelError(RuntimeError):
+    pass
+
+
 class Ui:
     DIALOG_TYPE_OK = 101
     DIALOG_TYPE_YES_NO = 102
@@ -56,8 +60,14 @@ class Ui:
     def prompt(description='', choices=[], default=None):
         raise NotImplementedError('please implement in a subclass!')
 
-    def read(hint='', default=None):
-        raise NotImplementedError('please implement in a subclass!')
+    def read(self, hint='', default=None):
+        reply = self.prompt(hint, ['q! to cancel'], default=default)
+        if default is not None and reply == '':
+            return default
+        elif reply.lower() == 'q!':
+            raise ReadCancelError
+        else:
+            return reply
 
     def read_multiline(hint=''):
         raise NotImplementedError('please implement in a subclass!')
