@@ -87,31 +87,30 @@ class Ui:
         #   irrelevant differences and unpredicted alternative answers)
         #   (ignored if CHKCORRECT is not present)
 
-        remaining = quiz.cards
+        remaining = list(range(len(quiz.cards)))
         if 'LIST_ORDER' or 'REV_ORDER' in flags:
-            x = -1  # preset to get 0 as the first index; same for REV_ORDER,
+            rx = 0  # stays 0 within remaining; same for REV_ORDER,
             #  because in this case, list is reversed (below)
             if 'REV_ORDER' in flags:
                 remaining.reverse()
         while remaining:  # isn't empty
-            if 'LIST_ORDER' in flags:
-                x += 1
-            else:
-                x = random.randint(0, len(remaining)-1)
-            card = remaining[x]
+            if not ('LIST_ORDER' or 'REV_ORDER' in flags):
+                rx = random.randint(0, len(remaining)-1)
+            x = remaining[rx]
+            card = quiz.cards[x]
             if 'FLIP_QA' in flags:
                 card.reverse()
             a = self.prompt(card[0] + '? Answer', ['optional; q! to end'])
             self.write('The default answer: ' + card[1])
             if a == 'q!':
-                remaining = []
+                break
             elif 'CHKCORRECT' in flags and(a == card[1]):
                 self.write("Congratulations, that's right!")
-                del remaining[x]
+                del remaining[rx]
             elif 'ASKRIGHT' not in flags or self.prompt(
                 'Was it right?', ['y/n']
             ).upper() == 'Y':
-                del remaining[x]
+                del remaining[rx]
 
     @staticmethod
     def _card_repr(card, index=None):
