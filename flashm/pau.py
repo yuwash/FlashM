@@ -33,11 +33,11 @@ def load(filename, name):
             sidetext(card.getElementsByTagName('FrontSide').item(0)),
             sidetext(card.getElementsByTagName('ReverseSide').item(0))
         ])
-    return flashmquiz.quiz(name, set)
+    return flashmquiz.Quiz(name, set)
 
 
 def dump(quiz, filename):
-    # @param quiz has the type of flashmquiz.quiz
+    # @param quiz has the type of flashmquiz.Quiz
     pxml = xml.dom.minidom.getDOMImplementation().createDocument(
         None, 'Lesson', None,
     )

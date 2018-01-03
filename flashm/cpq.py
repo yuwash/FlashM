@@ -24,7 +24,7 @@ def load(filename, name):
 
 
 def dump(quiz, filename):
-    # @param quiz has the type of flashmquiz.quiz
+    # @param quiz has the type of flashmquiz.Quiz
     f = open(filename, 'wb')
     pickle.dump(quiz.set, f)  # write the quiz to a file
     f.close()
