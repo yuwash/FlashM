@@ -1,0 +1,15 @@
+[[source]]
+
+name = "pypi"
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+
+[packages]
+
+prompt-toolkit = {editable = true, git = "https://github.com/jonathanslenders/python-prompt-toolkit"}
+flashm = {editable = true, path = "."}
+
+
+[dev-packages]
+
