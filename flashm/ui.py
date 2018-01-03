@@ -124,7 +124,7 @@ class Ui:
     def delete_menu(self, quiz):
         if quiz.set:  # isn't empty
             # list cards with indices
-            self.show_cards(True)
+            self.show_cards(quiz, True)
             cardindices = self.prompt('Delete which card(s)?').split(',')
             deleted = []  # adapt to the modified indices
             # and avoid deleting the same index several times
@@ -134,7 +134,10 @@ class Ui:
                     if i not in deleted:
                         # index has been changed after deletion
                         # of cards indexed below i
-                        delta_i = len(filter(lambda di: di < i, deleted))
+                        delta_i = sum(map(
+                            lambda i: 1,
+                            filter(lambda di: di < i, deleted),
+                        ))
                         quiz.remove(i - delta_i)
                         deleted.append(i)  # contains original indices
                 except IndexError:
