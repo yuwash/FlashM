@@ -59,11 +59,8 @@ class FullTerminalUi(Ui):
                 return False
             return reply
 
-    def dialog(self, type, hint=None):
-        if type == self.DIALOG_TYPE_OK:
-            self.write(hint)
-        elif type == self.DIALOG_TYPE_YES_NO:
-            return dialogs.yes_no_dialog(text=hint)
+    def yes_no_dialog(self, hint=None):
+        return dialogs.yes_no_dialog(text=hint)
 
     def choice(self, options, hint=None, show_options=True):
         if not show_options:

@@ -54,9 +54,6 @@ class ReadCancelError(RuntimeError):
 
 
 class Ui:
-    DIALOG_TYPE_OK = 101
-    DIALOG_TYPE_YES_NO = 102
-
     def prompt(description='', choices=[], default=None):
         raise NotImplementedError('please implement in a subclass!')
 
@@ -75,7 +72,7 @@ class Ui:
     def write(content):
         raise NotImplementedError('please implement in a subclass!')
 
-    def dialog(type, hint=None):
+    def dialog(hint=None):
         raise NotImplementedError('please implement in a subclass!')
 
     def learn(self, quiz, flags=()):
@@ -159,8 +156,8 @@ class Ui:
 
     def save(self, quiz, save_as=True, ask_whether_to_save=False):
         quiz.temp_save(STD_IOMODULE)
-        if not ask_whether_to_save or self.dialog(
-            self.DIALOG_TYPE_YES_NO, 'Do you want to save changes?'
+        if not ask_whether_to_save or self.yes_no_dialog(
+            'Do you want to save changes?'
         ):
             if save_as:
                 try:
@@ -232,8 +229,7 @@ class Session:
                     result = guess_file_type(name).load(name, name)
                     # filename=name
                 except IOError:
-                    if(create and uimodule.dialog(
-                        uimodule.DIALOG_TYPE_YES_NO,
+                    if(create and uimodule.yes_no_dialog(
                         'The quiz file "' + name + '" doesn\'t exist. '
                         + 'Do you want to create it?'
                     )):

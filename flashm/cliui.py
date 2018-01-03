@@ -37,11 +37,8 @@ class CliUi(Ui):
                 reply += '\n' + input('... ')
             return reply
 
-    def dialog(self, type, hint=None):
-        if type == self.DIALOG_TYPE_OK:
-            input(hint)
-        elif type == self.DIALOG_TYPE_YES_NO:
-            return 'y' == self.prompt(hint, ['y/n']).lower()
+    def yes_no_dialog(self, hint=None):
+        return 'y' == self.prompt(hint, ['y/n']).lower()
 
     def choice(self, options, hint=None, show_options=True):
         # @param options:
