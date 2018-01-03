@@ -22,10 +22,6 @@ You should have received a copy of the GNU General Public License
 along with this program (see [LICENSE](LICENSE) file);
 If not, see <http://www.gnu.org/licenses/>.
 
-## Changes
-
-0.1.0 - The first version!
-
 ## Requirements
 
 * Python available at http://python.org (included in most Linux 
