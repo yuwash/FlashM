@@ -87,7 +87,7 @@ class Ui:
         #   irrelevant differences and unpredicted alternative answers)
         #   (ignored if CHKCORRECT is not present)
 
-        remaining = quiz.set
+        remaining = quiz.cards
         if 'LIST_ORDER' or 'REV_ORDER' in flags:
             x = -1  # preset to get 0 as the first index; same for REV_ORDER,
             #  because in this case, list is reversed (below)
@@ -122,14 +122,14 @@ class Ui:
 
     def show_cards(self, quiz, show_indices=False):
         if show_indices:
-            for i, card in enumerate(quiz.set):
+            for i, card in enumerate(quiz.cards):
                 self.write(self._card_repr(card, index=i))
         else:
-            for card in quiz.set:
+            for card in quiz.cards:
                 self.write(self._card_repr(card))
 
     def delete_menu(self, quiz):
-        if quiz.set:  # isn't empty
+        if quiz.cards:  # isn't empty
             # list cards with indices
             self.show_cards(quiz, True)
             cardindices = self.prompt('Delete which card(s)?').split(',')

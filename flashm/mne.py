@@ -29,13 +29,13 @@ def load(filename, name):
         .getElementsByTagName('item')
     )
     zf.close()
-    set = []
+    cards = []
     for card in cards:
-        set.append([
+        cards.append([
             sidetext(card.getElementsByTagName('Q').item(0)),
             sidetext(card.getElementsByTagName('A').item(0))
         ])
-    return flashmquiz.Quiz(name, set)
+    return flashmquiz.Quiz(name, cards)
 
 
 def dump(quiz, filename):
@@ -53,7 +53,7 @@ def dump(quiz, filename):
     namenode.appendChild(mxml.createTextNode(quiz.name))
     catnode.appendChild(namenode)
     mxml.documentElement.appendChild(catnode)
-    for card in quiz.set:
+    for card in quiz.cards:
         itemnode = mxml.createElement('item')
         for i in (0, 1):
             if i:  # == 1

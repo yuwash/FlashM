@@ -27,13 +27,13 @@ def load(filename, name):
         )
     cards = xml.dom.minidom.parse(pf).getElementsByTagName('Card')
     pf.close()
-    set = []
+    cards = []
     for card in cards:
-        set.append([
+        cards.append([
             sidetext(card.getElementsByTagName('FrontSide').item(0)),
             sidetext(card.getElementsByTagName('ReverseSide').item(0))
         ])
-    return flashmquiz.Quiz(name, set)
+    return flashmquiz.Quiz(name, cards)
 
 
 def dump(quiz, filename):
@@ -46,7 +46,7 @@ def dump(quiz, filename):
             'This is a lesson file for Pauker, created by FlashM')
     )
     batchnode = pxml.createElement('Batch')
-    for card in quiz.set:
+    for card in quiz.cards:
         cardnode = pxml.createElement('Card')
         for i in (0, 1):
             if i:
