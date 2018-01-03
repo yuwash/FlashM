@@ -1,6 +1,6 @@
 # History
 
-## 0.1.0
+## 0.1.0 2017-01-03
 
 * The first version!
 
