@@ -21,9 +21,9 @@ except NameError:
 def load(filename, name):
     zf = zipfile.ZipFile(filename)
     xmlfilename = zf.namelist()[0]
-    sidetext = lambda node: (
-        str(node.firstChild.data.strip())
-    )
+
+    def sidetext(node):
+        return str(node.firstChild.data.strip())
     cards = (
         xml.dom.minidom.parse(zf.open(xmlfilename))
         .getElementsByTagName('item')
