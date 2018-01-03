@@ -3,7 +3,7 @@
 # This only works within flashm.py
 # see README file for copyright information and version history
 
-from flashm import Ui
+from ui import Ui
 
 # for Python 2
 try:

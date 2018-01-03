@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from argparse import ArgumentParser
-from flashm import Session, NOTICE
+from ui import Session, NOTICE
 
 
 def main():
