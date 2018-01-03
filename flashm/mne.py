@@ -4,7 +4,7 @@
 # This only works within flashm.py
 # see README file for copyright information and version history
 
-import flashmquiz
+from . import flashmquiz
 import zipfile
 import os
 import xml.dom.minidom

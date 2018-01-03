@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 from argparse import ArgumentParser
-from ui import Session, NOTICE
+from .ui import Session, NOTICE
 
 
 def main():
@@ -17,10 +17,10 @@ def main():
     )
     args = argparser.parse_args()
     if args.interaction == 'cli':
-        from cliui import CliUi
+        from .cliui import CliUi
         ui = CliUi()
     elif args.interaction == 'fullterm':
-        from fulltermui import FullTerminalUi
+        from .fulltermui import FullTerminalUi
         ui = FullTerminalUi()
     Session.open_quiz_file(uimodule=ui, quiet=args.quiet).start()
 

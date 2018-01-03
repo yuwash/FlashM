@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from tempfile import NamedTemporaryFile
 import subprocess
 from prompt_toolkit.shortcuts import dialogs
-from ui import Ui
+from .ui import Ui
 
 EDITOR = 'vim'
 

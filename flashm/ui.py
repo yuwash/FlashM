@@ -4,11 +4,11 @@
 # see README file for copyright information and version history
 
 import random
-import flashmquiz
+from . import flashmquiz
 
-import cpq
-import pau
-import mne
+from . import cpq
+from . import pau
+from . import mne
 # cliui.py for the command-line interface
 # cpq.py for FlashM to handle cPickle quiz files of FlashE
 # pau.py for Pau quiz files of Pauker (pauker.sourceforge.net)

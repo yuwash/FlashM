@@ -10,7 +10,7 @@ try:
 except ImportError:
     import pickle
 
-import flashmquiz
+from . import flashmquiz
 
 
 def load(filename, name):
