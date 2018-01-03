@@ -41,7 +41,7 @@ class CliUi(Ui):
         if type == self.DIALOG_TYPE_OK:
             input(hint)
         elif type == self.DIALOG_TYPE_YES_NO:
-            return 'y' == self.prompt(hint, ['(y/n)']).lower()
+            return 'y' == self.prompt(hint, ['y/n']).lower()
 
     def choice(self, options, hint=None, show_options=True):
         # @param options:
