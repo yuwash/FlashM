@@ -106,14 +106,20 @@ class Ui:
             ).upper() == 'Y':
                 del remaining[x]
 
+    @staticmethod
+    def _card_repr(card, index=None):
+        output = ''
+        if index is not None:
+            output += '[{:d}] '.format(index)
+        return output + '[{}: {}]'.format(card[0], card[1])
+
     def show_cards(self, quiz, show_indices=False):
-        i = 0
-        for card in quiz.set:
-            output = ''
-            if show_indices:
-                output += '[%d] ' % i
-                i += 1
-            self.write(output + '[' + card[0] + ': ' + card[1] + ']')
+        if show_indices:
+            for i, card in enumerate(quiz.set):
+                self.write(self._card_repr(card, index=i))
+        else:
+            for card in quiz.set:
+                self.write(self._card_repr(card))
 
     def delete_menu(self, quiz):
         if quiz.set:  # isn't empty
@@ -126,12 +132,11 @@ class Ui:
                 try:
                     i = int(istr)
                     if i not in deleted:
-                        for di in deleted:
-                            if di < i:
-                                i -= 1  # index has been changed after deletion
-                                # of cards indexed below i
-                        quiz.remove(i)
-                        deleted.append(i)
+                        # index has been changed after deletion
+                        # of cards indexed below i
+                        delta_i = len(filter(lambda di: di < i, deleted))
+                        quiz.remove(i - delta_i)
+                        deleted.append(i)  # contains original indices
                 except IndexError:
                     self.write('IndexError: list index %s out of range' % istr)
                 except ValueError:  # if istr doesn't contain a number
