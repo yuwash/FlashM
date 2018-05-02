@@ -19,7 +19,7 @@ NOTICE = """FlashM version 0.1.0
   inspired by:
     FlashE A Very simple flash card program
     Copyright (C) 2003  Robie Lutsey (robie at 1937.net)
-    http://sourceforge.net/project/flashe
+    https://sourceforge.net/projects/flashe/
   FlashM is provided 'as is' without any warranty under the terms of the
   GNU General Public License Version 3.
   This is free software, and you are welcome

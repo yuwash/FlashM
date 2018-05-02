@@ -4,7 +4,8 @@ A still simple cli flash card application
 compatible with lesson files of [Pauker](http://pauker.sourceforge.net)
 
 The project started 2011 with inspiration from
-[FlashE](http://sourceforge.net/project/flashe) (2003) by Robie Lutsey
+[FlashE](https://sourceforge.net/projects/flashe/)
+(2003) by Robie Lutsey
 
 ## License
 
