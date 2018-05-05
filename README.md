@@ -23,41 +23,38 @@ You should have received a copy of the GNU General Public License
 along with this program (see [LICENSE](LICENSE) file);
 If not, see <http://www.gnu.org/licenses/>.
 
-## Requirements
-
-* Python available at http://python.org (included in most Linux 
-  distributions)
-* Any commandline emulator (terminal) of your choice (included in
-  almost all operating systems)
-
 ## Installation
 
-unzip (if compressed) and save into any folder you like!
-make sure that you want to save lesson files in that directory
-(optionally, you can create shortcuts of flashm.py 
-on the desktop etc. for increased accessability)
+This should run with both Python 2 and 3. To use the fullterm UI, you
+need
+[prompt-toolkit](https://github.com/jonathanslenders/python-prompt-toolkit).
+
+`setup.py` is provided, but `prompt-toolkit>2.0` isn’t yet available
+from PyPI.
+Please use [pipenv](https://docs.pipenv.org/):
+
+```
+cd /path/to/FlashM
+pipenv install
+```
 
 ## Usage
 
-* Linux users can open a terminal in the installed directory and call
-   ```
-    python flashm.py
-   ```
-  OR click on a shortcut for the command
-   ```
-    python <PATH>/flashm.py
-   ```
-  where <PATH> should be substituted by your installation directory of 
-  FlashM with the setting "execute in a command-line emulator" checked
-* Other users could need to execute Python directly from its 
-  installation path (e. g. Win: 'C:\Programs\Python\python.exe'). There
-  you can import flashm.py with the command
-    import <PATH>flashm
-  where <PATH> should be substituted by your installation directory of 
-  FlashM. Opening flashm.py with Python (like opening any document with
-  a text editor) could in some cases happily open up a command line
-  emulator with all what you need
+You can run flashm with (without `pipenv run` if you’re not using
+pipenv):
 
+```
+pipenv run python -m flashm [options…]
+```
+
+optional arguments:              
+
+```
+  -h, --help            show this help message and exit            
+  -q, --quiet           turn off verbose output                    
+  -i [{cli,fullterm}], --interaction [{cli,fullterm}]              
+                        UI for interaction
+```
 
 This is a beta release.
 I'm happy to hear any feedback. Make a pull request or submit an issue!
