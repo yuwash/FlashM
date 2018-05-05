@@ -7,6 +7,8 @@ The project started 2011 with inspiration from
 [FlashE](https://sourceforge.net/projects/flashe/)
 (2003) by Robie Lutsey
 
+[![asciicast](https://asciinema.org/a/1G9PubduBCQKuto1ui4QicJ32.png)](https://asciinema.org/a/1G9PubduBCQKuto1ui4QicJ32)
+
 ## License
 
 This program is free software: you can redistribute it and/or
