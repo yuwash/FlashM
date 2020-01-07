@@ -27,26 +27,20 @@ If not, see <http://www.gnu.org/licenses/>.
 
 ## Installation
 
-This should run with both Python 2 and 3. To use the fullterm UI, you
-need
+This should run with both Python 2 and 3 except for the fullterm UI
+which requires at least Python 3.6 (because of
 [prompt-toolkit](https://github.com/jonathanslenders/python-prompt-toolkit).
 
-`setup.py` is provided, but `prompt-toolkit>2.0` isn’t yet available
-from PyPI.
-Please use [pipenv](https://docs.pipenv.org/):
-
 ```
-cd /path/to/FlashM
-pipenv install
+pip install /path/to/FlashM
 ```
 
 ## Usage
 
-You can run flashm with (without `pipenv run` if you’re not using
-pipenv):
+You can run flashm with:
 
 ```
-pipenv run python -m flashm [options…]
+python -m flashm [options…]
 ```
 
 optional arguments:              

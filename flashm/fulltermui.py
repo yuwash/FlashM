@@ -25,10 +25,10 @@ class FullTerminalUi(Ui):
             text = choiceshint
         if text:
             dialog_kwargs['text'] = text
-        return dialogs.input_dialog(**dialog_kwargs)
+        return dialogs.input_dialog(**dialog_kwargs).run()
 
     def write(self, content):
-        dialogs.message_dialog(text=content)
+        dialogs.message_dialog(text=content).run()
 
     def read(self, hint='', default=None):
         if hint:
@@ -41,7 +41,7 @@ class FullTerminalUi(Ui):
                 text += '; ' + defaulthint
             else:
                 text = defaulthint
-        reply = dialogs.input_dialog(text=text)
+        reply = dialogs.input_dialog(text=text).run()
         if reply:
             return reply
         elif reply is None:
@@ -60,7 +60,7 @@ class FullTerminalUi(Ui):
             return reply
 
     def yes_no_dialog(self, hint=None):
-        return dialogs.yes_no_dialog(text=hint)
+        return dialogs.yes_no_dialog(text=hint).run()
 
     def choice(self, options, hint=None, show_options=True):
         if not show_options:
@@ -68,5 +68,5 @@ class FullTerminalUi(Ui):
         reply = dialogs.radiolist_dialog(text=hint, values=[(
             key,
             value[0] + (' ' + value[1] if len(value) > 1 else ''),
-        ) for key, value in options.items()])
+        ) for key, value in options.items()]).run()
         return reply

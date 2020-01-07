@@ -13,8 +13,7 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 requirements = [
-    'prompt_toolkit>=2.0',  # not yet available from PyPI
-    # please use Pipfile to install it from git
+    'prompt_toolkit>=3.0',
 ]
 
 setup_requirements = [
@@ -58,6 +57,7 @@ setup(
         # 'Programming Language :: Python :: 3.3',
         # 'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Utilities',
     ],
     # test_suite='tests',
