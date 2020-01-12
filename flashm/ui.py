@@ -3,8 +3,10 @@
 #
 # see README file for copyright information and version history
 
+import asyncio
 import random
 from . import flashmquiz
+from .playback import Deck, playback_into_deck, playback_from_deck
 
 from . import cpq
 from . import pau
@@ -41,7 +43,7 @@ def guess_file_type(filename):
 
 
 def str_get_card(card_str):
-    card_str.replace('\=', '&&eq;')
+    card_str.replace('\\=', '&&eq;')
     card = card_str.split('=', 2)
     if len(card) == 2:
         for i in (0, 1):
@@ -50,6 +52,10 @@ def str_get_card(card_str):
 
 
 class ReadCancelError(RuntimeError):
+    pass
+
+
+class StopPlayback(RuntimeError):
     pass
 
 
@@ -112,6 +118,26 @@ class Ui:
             ).upper() == 'Y':
                 del remaining[rx]
 
+    def playback_show_card(self, card, duration):
+        raise NotImplementedError('please implement in a subclass!')
+
+    async def playback_async(self, quiz):
+        deck = Deck()
+        try:
+            for i in playback_into_deck(deck, list(range(len(quiz.cards)))):
+                await self.playback_show_card(quiz.cards[i], duration=2)
+            for i in playback_from_deck(deck):
+                await self.playback_show_card(quiz.cards[i], duration=2)
+        except StopPlayback:
+            return
+
+    def playback(self, quiz):
+        try:
+            asyncio.get_event_loop().run_until_complete(
+                self.playback_async(quiz))
+        except KeyboardInterrupt:
+            return
+
     @staticmethod
     def _card_repr(card, index=None):
         output = ''
@@ -119,13 +145,16 @@ class Ui:
             output += '[{:d}] '.format(index)
         return output + '[{}: {}]'.format(card[0], card[1])
 
+    def show_card(self, card, index=None):
+        self.write(self._card_repr(card, index=index))
+
     def show_cards(self, quiz, show_indices=False):
         if show_indices:
             for i, card in enumerate(quiz.cards):
-                self.write(self._card_repr(card, index=i))
+                self.show_card(card, index=i)
         else:
             for card in quiz.cards:
-                self.write(self._card_repr(card))
+                self.show_card(card)
 
     def delete_menu(self, quiz):
         if quiz.cards:  # isn't empty
@@ -195,6 +224,7 @@ class Session:
     EVT_TEXT_IMPORT = 102
     EVT_LEARN = 103
     EVT_NEW_CARD = 104
+    EVT_PLAYBACK = 108
     EVT_QUIT = 105
     EVT_REV_LEARN = 106
     EVT_SHOW = 107
@@ -203,6 +233,7 @@ class Session:
         EVT_TEXT_IMPORT: ('i', 'Import cards from text'),
         EVT_LEARN: ('l', 'Learn'),
         EVT_NEW_CARD: ('n', 'Add new card'),
+        EVT_PLAYBACK: ('p', 'Playback'),
         EVT_QUIT: ('q', 'Quit'),
         EVT_REV_LEARN: ('r', 'Learn with flipped cards'),
         EVT_SHOW: ('s', 'Show cards')
@@ -258,6 +289,8 @@ class Session:
                 if newcard is not None:
                     self.cwq.append(newcard)
                     self.uimodule.save(self.cwq, True, True)
+            elif command == cls.EVT_PLAYBACK:
+                self.uimodule.playback(self.cwq)
             elif command == cls.EVT_QUIT:  # quit application
                 stay = False
                 if self.cwq.modified:  # if not saved after modification

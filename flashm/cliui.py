@@ -3,7 +3,8 @@
 # This only works within flashm.py
 # see README file for copyright information and version history
 
-from .ui import Ui
+import asyncio
+from .ui import Ui, StopPlayback
 
 # for Python 2
 try:
@@ -29,6 +30,13 @@ class CliUi(Ui):
 
     def write(self, content):
         print(content)
+
+    async def playback_show_card(self, card, duration):
+        try:
+            self.show_card(card)
+            await asyncio.sleep(duration)
+        except KeyboardInterrupt:
+            raise StopPlayback()
 
     def read_multiline(self, hint=''):
         reply = self.prompt(hint, ['q! to cancel', 'finish with ;;;'])
