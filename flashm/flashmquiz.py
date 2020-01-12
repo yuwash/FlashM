@@ -7,9 +7,12 @@ import os
 
 
 class Quiz:
-    def __init__(self, name, cards=[], file_name=None):
+    def __init__(self, name, cards=None, file_name=None):
         self.name = name
-        self.cards = cards
+        if cards is None:
+            self.cards = []
+        else:
+            self.cards = cards
         if file_name:
             self.file_name = file_name
         else:

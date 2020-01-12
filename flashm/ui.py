@@ -8,9 +8,7 @@ import random
 from . import flashmquiz
 from .playback import Deck, playback_into_deck, playback_from_deck
 
-from . import cpq
-from . import pau
-from . import mne
+from .quiz_io.cpq import PickleQuizIO
 # cliui.py for the command-line interface
 # cpq.py for FlashM to handle cPickle quiz files of FlashE
 # pau.py for Pau quiz files of Pauker (pauker.sourceforge.net)
@@ -29,15 +27,18 @@ NOTICE = """FlashM version 0.1.0
   LICENSE file for details and the README file for more information
   about usage, installation and the history of this application."""
 
-STD_IOMODULE = cpq  # what to use when file name extension doesn't imply
+STD_IOMODULE = PickleQuizIO  # to use when file name extension doesn't imply
 #  any specific quiz format (like .pau.gz for Pauker lessons)
 
 
 def guess_file_type(filename):
-    if(filename[-7:].lower() == '.pau.gz'):
-        return pau
-    elif(filename[-4:].lower() == '.zip'):
-        return mne
+    filename_low = filename.lower()
+    if(filename_low.endswith('.pau.gz')):
+        from .quiz_io.pau import PaukerQuizIO
+        return PaukerQuizIO
+    elif(filename_low.endswith('.zip')):
+        from .quiz_io.mne import MnemosyneQuizIO
+        return MnemosyneQuizIO
     else:
         return STD_IOMODULE
 
