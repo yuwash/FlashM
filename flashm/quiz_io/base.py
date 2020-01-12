@@ -48,9 +48,12 @@ class XMLQuizIOMixin(object):
         return str(node.firstChild.data.strip())
 
     @classmethod
+    def get_cards_root(cls, xmldoc):
+        return xmldoc.getElementsByTagName(cls.xml_cards_root_tag)
+
+    @classmethod
     def build_quiz_from_file(cls, readable, name):
-        cards_root = xml.dom.minidom.parse(readable).getElementsByTagName(
-            cls.xml_cards_root_tag)
+        cards_root = cls.get_cards_root(xml.dom.minidom.parse(readable))
         cards = [[
             cls.get_sidetext(card_node.getElementsByTagName(tag_name).item(0))
             for tag_name in (

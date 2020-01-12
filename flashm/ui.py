@@ -36,6 +36,9 @@ def guess_file_type(filename):
     if(filename_low.endswith('.pau.gz')):
         from .quiz_io.pau import PaukerQuizIO
         return PaukerQuizIO
+    elif(filename_low.endswith('.cards')):
+        from .quiz_io.mne2 import Mnemosyne2QuizIO
+        return Mnemosyne2QuizIO
     elif(filename_low.endswith('.zip')):
         from .quiz_io.mne import MnemosyneQuizIO
         return MnemosyneQuizIO
