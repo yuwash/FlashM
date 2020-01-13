@@ -15,6 +15,11 @@ class Mnemosyne2QuizIO(ZippedXMLQuizIO):
 
     @classmethod
     def get_cards_root(cls, xmldoc):
+        def check(node):
+            # some log[type="16"] elements contain m_1, p_1 elements
+            # instead of b elements;
+            # those are not supported at the moment
+            return bool(node.getElementsByTagName(cls.xml_cards_answer_tag))
         return [
             node for node in xmldoc.getElementsByTagName('log')
-            if node.getAttribute('type') == '16']
+            if node.getAttribute('type') == '16' and check(node)]
