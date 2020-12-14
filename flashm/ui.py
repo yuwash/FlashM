@@ -1,4 +1,4 @@
-# flashm.py the main module of FlashM 0.1.0
+# flashm.py the main module of FlashM 0.1.1
 # call this file with python (http://python.org)
 #
 # see README file for copyright information and version history
@@ -39,9 +39,12 @@ def guess_file_type(filename):
     elif(filename_low.endswith('.cards')):
         from .quiz_io.mne2 import Mnemosyne2QuizIO
         return Mnemosyne2QuizIO
-    elif(filename_low.endswith('.zip')):
+    elif(filename_low.endswith('.zip')):  # FIXME potential clash
         from .quiz_io.mne import MnemosyneQuizIO
         return MnemosyneQuizIO
+    elif(filename_low.endswith('.txt')):  # FIXME potential clash
+        from .quiz_io.forgetmenot import ForgetMeNotExportQuizIO
+        return ForgetMeNotExportQuizIO
     else:
         return STD_IOMODULE
 
