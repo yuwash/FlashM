@@ -1,0 +1,12 @@
+Q:
+good
+A:
+bone
+
+
+Q:
+bad
+A:
+malbone
+
+
