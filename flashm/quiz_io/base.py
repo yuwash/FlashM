@@ -45,7 +45,9 @@ class XMLQuizIOMixin(object):
 
     @staticmethod
     def get_sidetext(node):
-        return str(node.firstChild.data.strip())
+        child = node.firstChild
+        if child is not None:
+            return str(child.data.strip())
 
     @classmethod
     def get_cards_root(cls, xmldoc):
